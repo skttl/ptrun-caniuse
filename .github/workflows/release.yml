@@ -38,13 +38,19 @@ jobs:
       run: dotnet sln "BuildTemporary.sln" add src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj
       
     - name: Build project
-      run: dotnet build "BuildTemporary.sln" --configuration Release --output ./build_output
-
+      run: dotnet build "BuildTemporary.sln" --configuration Release --output ./build_output/CanIUse
+      
+    - name: Install zip
+      uses: montudor/action-zip@v1
+    
     - name: Create ZIP of build output
+      shell: pwsh  # Use PowerShell shell
       run: |
         # Exclude specific files and create the zip file
-        zip -r CanIUse.zip ./build_output \
-        -x "PowerToys.Common.UI.dll" "PowerToys.ManagedCommon.dll" "PowerToys.Settings.UI.Lib.dll" "Wox.Infrastructure.sll" "Wox.Plugin.dll"
+        $exclude = @("PowerToys.Common.UI.dll", "PowerToys.ManagedCommon.dll", "PowerToys.Settings.UI.Lib.dll", "Wox.Infrastructure.dll", "Wox.Plugin.dll")
+        Get-ChildItem -Recurse ./build_output | Where-Object { 
+          $exclude -notcontains $_.Extension 
+        } | Compress-Archive -DestinationPath CanIUse.zip -Update
 
     - name: Upload project artifacts
       uses: actions/upload-artifact@v3
