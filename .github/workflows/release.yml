@@ -44,17 +44,34 @@ jobs:
       shell: pwsh  # Use PowerShell shell
       run: |
         $sourcePath = ".\build_output"
+        $tempPath = ".\temp_build_output"
         $zipPath = "CanIUse.zip"
         
+        # Create a temporary folder
+        New-Item -ItemType Directory -Path $tempPath -Force
+    
         # Get all files, including those in subdirectories, and filter out the unwanted files
         Get-ChildItem $sourcePath -File -Recurse | Where-Object {
             $_.Name -notin @("Wox.Plugin.dll", "Wox.Infrastructure.dll", "PowerToys.Common.UI.dll", "PowerToys.ManagedCommon.dll", "PowerToys.Settings.UI.Lib.dll")
         } | ForEach-Object {
             # Get the relative path of the file to preserve folder structure
             $relativePath = $_.FullName.Substring($sourcePath.Length + 1)
-            # Use -Update with Compress-Archive to preserve folder structure
-            Compress-Archive -Path $_.FullName -DestinationPath $zipPath -Update -EntryName $relativePath
+            # Combine temp folder with relative path to create the same structure
+            $destination = Join-Path $tempPath $relativePath
+            # Create the destination directory if it doesn't exist
+            $destinationDir = Split-Path $destination
+            if (-not (Test-Path $destinationDir)) {
+                New-Item -ItemType Directory -Path $destinationDir -Force
+            }
+            # Copy the file to the temp folder while keeping the relative structure
+            Copy-Item $_.FullName -Destination $destination
         }
+    
+        # Zip the temporary folder
+        Compress-Archive -Path $tempPath -DestinationPath $zipPath
+    
+        # Clean up the temporary folder
+        Remove-Item -Recurse -Force $tempPath
 
     - name: Upload project artifacts
       uses: actions/upload-artifact@v3
