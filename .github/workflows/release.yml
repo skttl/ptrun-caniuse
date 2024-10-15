@@ -43,14 +43,12 @@ jobs:
     - name: Create ZIP of build output
       shell: pwsh  # Use PowerShell shell
       run: |
-        # Exclude specific files and create the zip file
-        $exclude = @("PowerToys.Common.UI.dll", "PowerToys.ManagedCommon.dll", "PowerToys.Settings.UI.Lib.dll", "Wox.Infrastructure.dll", "Wox.Plugin.dll")
-        Get-ChildItem -Recurse ./build_output | Where-Object { 
-          $exclude -notcontains $_.Extension 
-        } | Compress-Archive -DestinationPath CanIUse.zip -Update
+        Get-ChildItem .\build_output | where { $_.Name -notin @("Wox.Plugin.dll", "Wox.Infrastructure.dll", "PowerToys.Common.UI.dll", "PowerToys.ManagedCommon.dll", "PowerToys.Settings.UI.Lib.dll")} | Compress-Archive -DestinationPath "CanIUse.zip" -Update
+
+    
 
     - name: Upload project artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: Project
+        name: Package
         path: CanIUse.zip
