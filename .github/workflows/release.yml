@@ -32,13 +32,13 @@ jobs:
       run: dotnet restore src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj
 
     - name: Create temporary solution for building
-      run: dotnet new sln BuildTemporary.sln
+      run: dotnet new sln -n "BuildTemporary"
 
     - name: Add project to temporary solution
-      run: dotnet sln BuildTemporary add src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj
+      run: dotnet sln "BuildTemporary.sln" add src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj
       
     - name: Build project
-      run: dotnet build BuildTemporary.sln --configuration Release --output ./build_output
+      run: dotnet build "BuildTemporary.sln" --configuration Release --output ./build_output
 
     - name: Create ZIP of build output
       run: |
