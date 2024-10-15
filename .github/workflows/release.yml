@@ -28,8 +28,17 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    - name: Restore dependencies
+      run: dotnet restore src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj
+
+    - name: Create temporary solution for building
+      run: dotnet new sln BuildTemporary.sln
+
+    - name: Add project to temporary solution
+      run: dotnet sln BuildTemporary add src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj
+      
     - name: Build project
-      run: dotnet build src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj --configuration Release --output ./build_output
+      run: dotnet build BuildTemporary.sln --configuration Release --output ./build_output
 
     - name: Create ZIP of build output
       run: |
