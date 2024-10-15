@@ -1,0 +1,14 @@
+{
+  "ID": "5C1A49E431F74D66BC62FD214D834609",
+  "ActionKeyword": "caniuse",
+  "IsGlobal": false,
+  "Name": "CanIUse",
+  "Author": "skttl",
+  "Version": "0.1.0",
+  "Language": "csharp",
+  "Website": "https://github.com/skttl/ptrun-caniuse",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.CanIUse.dll",
+  "IcoPathDark": "Images\\caniuse.dark.png",
+  "IcoPathLight": "Images\\caniuse.light.png",
+  "DynamicLoading": false
+}
