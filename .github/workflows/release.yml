@@ -29,10 +29,16 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Build project
-      run: dotnet build src\CanIUse\CanIUse.csproj --configuration Release
+      run: dotnet build src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj --configuration Release --output ./build_output
+
+    - name: Create ZIP of build output
+      run: |
+        # Exclude specific files and create the zip file
+        zip -r CanIUse.zip ./build_output \
+        -x "PowerToys.Common.UI.dll" "PowerToys.ManagedCommon.dll" "PowerToys.Settings.UI.Lib.dll" "Wox.Infrastructure.sll" "Wox.Plugin.dll"
 
     - name: Upload project artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Project
-        path: src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\bin
+        path: CanIUse.zip
