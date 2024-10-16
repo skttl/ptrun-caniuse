@@ -57,7 +57,7 @@ namespace Community.PowerToys.Run.Plugin.CanIUse
                         QueryTextDisplay = string.Empty,
                         Title = "Search caniuse.com",
                         SubTitle = Description,
-                        IcoPath = $"Images\\caniuse.png"
+                        IcoPath = IconPath
                     }
                 };
             }
@@ -77,7 +77,7 @@ namespace Community.PowerToys.Run.Plugin.CanIUse
                 {
                     Title = "No results",
                     SubTitle = $"No results found on caniuse.com for \"{query.Search}\"",
-                    IcoPath = $"Images\\caniuse.png"
+                    IcoPath = IconPath
                 });
             }
 
@@ -136,7 +136,8 @@ namespace Community.PowerToys.Run.Plugin.CanIUse
                 $"{item.Feature.UsagePercent}%" +
                 $"{(item.Feature.UsagePercentPartial != 0 ? $" + {item.Feature.UsagePercentPartial}% = {(item.Feature.UsagePercent + item.Feature.UsagePercentPartial)}%" : "")}",
                 SubTitle = $"{item.Feature.Stats.ToString(CanIUseSettings.Instance.DefaultBrowsers)}{Environment.NewLine}{item.Feature.Description}",
-                Action = action => Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, $"https://caniuse.com/#feat={item.Key}")
+                Action = action => Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, $"https://caniuse.com/#feat={item.Key}"),
+                IcoPath = IconPath
             };
         }
 
