@@ -34,19 +34,19 @@ jobs:
 
     - name: Package
       run: |
-        dotnet pack ${{ env.SLN_PATH }} -p:Platform=x64 -p:Version=${{ env.VERSION }}
+        dotnet pack ${{ env.SLN_PATH }} -p:Platform=x64 -p:Version=${{ env.VERSION }} 
         dotnet pack ${{ env.SLN_PATH }} -p:Platform=ARM64 -p:Version=${{ env.VERSION }}
 
     - name: Upload x64 To Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{secrets.GITHUB_TOKEN}}
-        file: ${{ env.PROJECT_PATH }}/bin/${{ env.PRODUCT_NAME }}_${{ env.VERSION }}_x64.zip
+        file: ${{ env.PROJECT_PATH }}/${{ env.PRODUCT_NAME }}_${{ env.VERSION }}_x64.zip
         asset_name: ${{ env.PRODUCT_NAME }}_${{ env.VERSION }}.zip
 
     - name: Upload ARM64 To Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{secrets.GITHUB_TOKEN}}
-        file: ${{ env.PROJECT_PATH }}/bin/${{ env.PRODUCT_NAME }}_${{ env.VERSION }}_ARM64.zip
+        file: ${{ env.PROJECT_PATH }}/${{ env.PRODUCT_NAME }}_${{ env.VERSION }}_ARM64.zip
         asset_name: ${{ env.PRODUCT_NAME }}_${{ env.VERSION }}_ARM64.zip
