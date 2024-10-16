@@ -71,13 +71,16 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          const { data: release } = await github.repos.getReleaseByTag({
+          const { octokit } = require('@actions/github');
+          
+          // Fetch the release by tag
+          const release = await octokit.rest.repos.getReleaseByTag({
             owner: context.repo.owner,
             repo: context.repo.repo,
             tag: '${{ env.VERSION }}'
           });
 
-          const currentBody = release.body || "";  // Fetch current release body, or default to an empty string
+          const currentBody = release.data.body || "";  // Fetch current release body, or default to an empty string
 
           // Prepare the updated body with SHA256 hashes
           const newBody = `
@@ -89,10 +92,10 @@ jobs:
           `;
 
           // Update the release with the new body
-          await github.repos.updateRelease({
+          await octokit.rest.repos.updateRelease({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            release_id: release.id,
+            release_id: release.data.id,
             body: newBody
           });
       env:
