@@ -11,6 +11,7 @@ jobs:
     env:
       PRODUCT_NAME: CanIUse
       PROJECT_PATH: ./src/CanIUse/Community.PowerToys.Run.Plugin.CanIUse
+      SLN_PATH: ./src/CanIUse/CanIUse.sln
 
     steps:
 
@@ -33,8 +34,8 @@ jobs:
 
     - name: Package
       run: |
-        dotnet pack -p:Platform=x64 -p:Version=${{ env.VERSION }}
-        dotnet pack -p:Platform=ARM64 -p:Version=${{ env.VERSION }}
+        dotnet pack ${{ env.SLN_PATH }} -p:Platform=x64 -p:Version=${{ env.VERSION }}
+        dotnet pack ${{ env.SLN_PATH }} -p:Platform=ARM64 -p:Version=${{ env.VERSION }}
 
     - name: Upload x64 To Release
       uses: svenstaro/upload-release-action@v2
