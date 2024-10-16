@@ -4,7 +4,7 @@
   "IsGlobal": false,
   "Name": "CanIUse",
   "Author": "skttl",
-  "Version": "0.1.0",
+  "Version": "$(Version)",
   "Language": "csharp",
   "Website": "https://github.com/skttl/ptrun-caniuse",
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.CanIUse.dll",
