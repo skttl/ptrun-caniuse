@@ -27,7 +27,7 @@ ptr add CanIUse skttl/ptrun-caniuse
 ### Manual install
 
 1. Download the latest release of the CanIUse from the releases page.
-2. Extract the zip file's contents to your PowerToys modules directory for the user (`%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`) or run the `install.bat` file.
+2. Extract the zip file's contents to your PowerToys modules directory for the user (`%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`).
 3. Restart PowerToys.
 
 ## Acknowledgments

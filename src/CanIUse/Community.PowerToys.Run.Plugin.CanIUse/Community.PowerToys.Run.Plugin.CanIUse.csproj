@@ -26,12 +26,9 @@
             AfterTargets="Build">
 		<ItemGroup>
 			<MySourceFiles Include="$(OutputPath)**/*" Exclude="$(OutputPath)Wox.*.dll;$(OutputPath)PowerToys.*.dll" />
-			<InstallBashFiles Include="./install.bat" />
 		</ItemGroup>
 		<Copy SourceFiles="@(MySourceFiles)"
 			  DestinationFiles="@(MySourceFiles->'./bin/output_$(Version)_$(Platform)/$(ProductName)/%(RecursiveDir)%(Filename)%(Extension)')" />
-		<Copy SourceFiles="@(InstallBashFiles)"
-              DestinationFolder="./bin/output_$(Version)_$(Platform)" />
 	</Target>
 	<Target Name="ZipOutput"
             AfterTargets="Pack">
