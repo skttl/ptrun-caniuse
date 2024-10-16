@@ -5,7 +5,6 @@ using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Controls;
 using Wox.Infrastructure;
