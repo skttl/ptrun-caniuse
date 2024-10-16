@@ -65,38 +65,15 @@ jobs:
         echo "x64_SHA=$x64_hash" >> $env:GITHUB_ENV
         echo "ARM64_SHA=$arm64_hash" >> $env:GITHUB_ENV
       shell: powershell
-
-    # Step to fetch the current release body, append SHA256 hashes, and update the release body
-    - name: Update Release Body with SHA256 Hashes
-      uses: actions/github-script@v6
+      
+    - name: update release
+      id: update_release
+      uses: tubone24/update_release@v1.0
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
       with:
-        script: |
-          const { octokit } = require('@actions/github');
-          
-          // Fetch the release by tag
-          const release = await octokit.rest.repos.getReleaseByTag({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            tag: '${{ env.VERSION }}'
-          });
-
-          const currentBody = release.data.body || "";  // Fetch current release body, or default to an empty string
-
-          // Prepare the updated body with SHA256 hashes
-          const newBody = `
-            ${currentBody}
-
+        is_append_body: 1
+        body: |
             ## SHA-256 Hashes:
             - **x64 Hash**: \`${{ env.x64_SHA }}\`
             - **ARM64 Hash**: \`${{ env.ARM64_SHA }}\`
-          `;
-
-          // Update the release with the new body
-          await octokit.rest.repos.updateRelease({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            release_id: release.data.id,
-            body: newBody
-          });
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
