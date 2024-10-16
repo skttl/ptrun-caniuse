@@ -10,12 +10,22 @@ You can configure the plugin to show your favorite browsers in the search result
 
 ![PowerToys Settings_RNYdDeLYbL](https://github.com/user-attachments/assets/5903a0ed-8ec0-4f1c-a081-6d533e0b81bb)
 
+## Usage
+
+1. Open PowerToys Run (default shortcut is <kbd>Alt+Space</kbd>).
+2. Type `caniuse` followed by your search query.
+3. Select a search result and press `Enter` to open it in browser.
+
 ## Installation
 
-**Using [PTR](https://github.com/8LWXpg/ptr)**
-> ptr a CanIUse skttl/ptrun-caniuse
+### Via [ptr](https://github.com/8LWXpg/ptr)
 
-**Manual install**
+```shell
+ptr add CanIUse skttl/ptrun-caniuse
+```
+
+### Manual install
+
 1. Download the latest release of the CanIUse from the releases page.
 2. Extract the zip file's contents to your PowerToys modules directory for the user (`%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`) or run the `install.bat` file.
 3. Restart PowerToys.
