@@ -36,7 +36,7 @@
 	<Target Name="ZipOutput"
             AfterTargets="Pack">
 		<ZipDirectory SourceDirectory="./bin/output_$(Version)_$(Platform)"
-                      DestinationFile="./bin/$(ProductName)_$(Version)_$(Platform).zip"
+                      DestinationFile="./$(ProductName)_$(Version)_$(Platform).zip"
                       Overwrite="true" />
 	</Target>
 </Project>
