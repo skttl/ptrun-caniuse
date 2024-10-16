@@ -71,14 +71,13 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          // Fetch the existing release body
-          const release = await github.repos.getReleaseByTag({
+          const { data: release } = await github.repos.getReleaseByTag({
             owner: context.repo.owner,
             repo: context.repo.repo,
             tag: '${{ env.VERSION }}'
           });
 
-          const currentBody = release.data.body || "";  // Fetch current release body, or default to an empty string
+          const currentBody = release.body || "";  // Fetch current release body, or default to an empty string
 
           // Prepare the updated body with SHA256 hashes
           const newBody = `
@@ -93,7 +92,7 @@ jobs:
           await github.repos.updateRelease({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            release_id: release.data.id,
+            release_id: release.id,
             body: newBody
           });
       env:
