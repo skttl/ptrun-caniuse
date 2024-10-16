@@ -3,123 +3,49 @@ name: Build and package for release
 on:
   release:
     types: [published]
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-      environment:
-        description: 'Environment to deploy'
-        required: false
-        default: 'staging'
 
 jobs:
   build:
     runs-on: windows-latest
+    
+    env:
+      PRODUCT_NAME: CanIUse
+      PROJECT_PATH: ./src/CanIUse/Community.PowerToys.Run.Plugin.CanIUse
 
     steps:
 
     - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+      uses: actions/checkout@v4
       with:
-        dotnet-version: 8.0.x
+        fetch-depth: 0
 
-    - name: Restore dependencies
-      run: dotnet restore src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj
-
-    - name: Create temporary solution for building
-      run: dotnet new sln -n "BuildTemporary"
-
-    - name: Add project to temporary solution
-      run: dotnet sln "BuildTemporary.sln" add src\CanIUse\Community.PowerToys.Run.Plugin.CanIUse\Community.PowerToys.Run.Plugin.CanIUse.csproj
-      
-    - name: Build project
-      run: dotnet build "BuildTemporary.sln" --configuration Release --output ./build_output/CanIUse
-
-    - name: Build project for ARM64
-      run: dotnet build "BuildTemporary.sln" --configuration Release --output ./build_ARM64/CanIUse --runtime win-arm64
-    
-    - name: Build project for x64
-      run: dotnet build "BuildTemporary.sln" --configuration Release --output ./build_x64/CanIUse --runtime win-x64
-    
-    - name: Create ZIP of build output
-      shell: pwsh  # Use PowerShell shell
+    - name: Extract version from release tag
+      id: extract_version
       run: |
-        $sourcePath = ".\build_ARM64"
-        $tempPath = ".\temp_build_ARM64"
-        $zipPath = "CanIUse_ARM64.zip"
+        $version = '${{ github.event.release.tag_name }}'
+        echo "VERSION=$version" >> $env:GITHUB_ENV
+      shell: powershell
         
-        # Create a temporary folder
-        New-Item -ItemType Directory -Path $tempPath -Force
-    
-        # Get all files, including those in subdirectories, and filter out the unwanted files
-        Get-ChildItem $sourcePath -File -Recurse | Where-Object {
-            $_.Name -notin @("Wox.Plugin.dll", "Wox.Infrastructure.dll", "PowerToys.Common.UI.dll", "PowerToys.ManagedCommon.dll", "PowerToys.Settings.UI.Lib.dll")
-        } | ForEach-Object {
-            # Get the relative path of the file to preserve folder structure
-            $relativePath = $_.FullName.Substring($sourcePath.Length + 1)
-            # Combine temp folder with relative path to create the same structure
-            $destination = Join-Path $tempPath $relativePath
-            # Create the destination directory if it doesn't exist
-            $destinationDir = Split-Path $destination
-            if (-not (Test-Path $destinationDir)) {
-                New-Item -ItemType Directory -Path $destinationDir -Force
-            }
-            # Copy the file to the temp folder while keeping the relative structure
-            Copy-Item $_.FullName -Destination $destination
-        }
-    
-        # Zip the temporary folder
-        Compress-Archive -Path $tempPath -DestinationPath $zipPath
-    
-        # Clean up the temporary folder
-        Remove-Item -Recurse -Force $tempPath
-    
-    - name: Create ZIP of build output
-      shell: pwsh  # Use PowerShell shell
+    - name: Replace version token in plugin.json
       run: |
-        $sourcePath = ".\build_x64"
-        $tempPath = ".\temp_build_x64"
-        $zipPath = "CanIUse_x64.zip"
-        
-        # Create a temporary folder
-        New-Item -ItemType Directory -Path $tempPath -Force
-    
-        # Get all files, including those in subdirectories, and filter out the unwanted files
-        Get-ChildItem $sourcePath -File -Recurse | Where-Object {
-            $_.Name -notin @("Wox.Plugin.dll", "Wox.Infrastructure.dll", "PowerToys.Common.UI.dll", "PowerToys.ManagedCommon.dll", "PowerToys.Settings.UI.Lib.dll")
-        } | ForEach-Object {
-            # Get the relative path of the file to preserve folder structure
-            $relativePath = $_.FullName.Substring($sourcePath.Length + 1)
-            # Combine temp folder with relative path to create the same structure
-            $destination = Join-Path $tempPath $relativePath
-            # Create the destination directory if it doesn't exist
-            $destinationDir = Split-Path $destination
-            if (-not (Test-Path $destinationDir)) {
-                New-Item -ItemType Directory -Path $destinationDir -Force
-            }
-            # Copy the file to the temp folder while keeping the relative structure
-            Copy-Item $_.FullName -Destination $destination
-        }
-    
-        # Zip the temporary folder
-        Compress-Archive -Path $tempPath -DestinationPath $zipPath
-    
-        # Clean up the temporary folder
-        Remove-Item -Recurse -Force $tempPath
+        (Get-Content '${{ env.PROJECT_PATH }}/plugin.json') -replace '\$\(Version\)', '${{ env.VERSION }}' | Set-Content '${{ env.PROJECT_PATH }}/plugin.json'
+      shell: powershell
 
-    - name: Upload project artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: Package
-        path: CanIUse_x64.zip
+    - name: Package
+      run: |
+        dotnet pack -p:Platform=x64 -p:Version=${{ env.VERSION }}
+        dotnet pack -p:Platform=ARM64 -p:Version=${{ env.VERSION }}
 
-    - name: Upload project artifacts
-      uses: actions/upload-artifact@v3
+    - name: Upload x64 To Release
+      uses: svenstaro/upload-release-action@v2
       with:
-        name: Package
-        path: CanIUse_ARM64.zip
+        repo_token: ${{secrets.GITHUB_TOKEN}}
+        file: bin/${{ env.PRODUCT_NAME }}_${{ env.VERSION }}_x64.zip
+        asset_name: ${{ env.PRODUCT_NAME }}_${{ env.VERSION }}.zip
+
+    - name: Upload ARM64 To Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{secrets.GITHUB_TOKEN}}
+        file: bin/${{ env.PRODUCT_NAME }}_${{ env.VERSION }}_ARM64.zip
+        asset_name: ${{ env.PRODUCT_NAME }}_${{ env.VERSION }}_ARM64.zip
